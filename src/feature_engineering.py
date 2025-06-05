@@ -29,6 +29,22 @@ file_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
+def load_params(params_path:str)->dict:
+     try:
+          with open(params_path,'r') as file:
+               params=yaml.safe_load(file)
+               logger.debug('parameter files loaded successfully from the path:%s',params_path)
+               return params
+     except FileNotFoundError as e:
+        logger.error("File not found at the path : %s",params_path)
+        raise
+     except yaml.YAMLError as y:
+        logger.error("YAML error: %s",y)
+        raise
+     except Exception as e:
+        logger.error('Unexpected error: %s', e)
+        raise
+
 def load_data(file_path:str)-> pd.DataFrame:
      """Load data from a CSV file."""
      try:
@@ -82,7 +98,8 @@ def main():
      try:
         train_data=load_data('./data/interim/train_processed.csv')
         test_data=load_data('./data/interim/test_processed.csv')
-        max_features=10
+        params = load_params(params_path='params.yaml')
+        max_features = params['feature_engineering']['max_features'] 
 
         train_df,test_df=apply_tfidf(train_data,test_data,max_features)
 

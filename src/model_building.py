@@ -28,6 +28,22 @@ file_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
+def load_params(parms_path:str)->dict:
+     try:
+          with open(parms_path,'r') as file:
+               params=yaml.safe_load(file)
+               logger.debug('parameter files loaded successfully from the path:%s',parms_path)
+               return params
+     except FileNotFoundError as e:
+        logger.error("File not found at the path : %s",parms_path)
+        raise
+     except yaml.YAMLError as y:
+        logger.error("YAML error: %s",y)
+        raise
+     except Exception as e:
+        logger.error('Unexpected error: %s', e)
+        raise
+
 def load_data(file_path: str) -> pd.DataFrame:
     """
     Load data from a CSV file.
@@ -96,7 +112,7 @@ def main():
         train_data=load_data('./data/processed/train_tfidf.csv')
         X_train=train_data.iloc[:,:-1].values
         y_train=train_data.iloc[:,-1].values
-        params = {'n_estimators':10, 'random_state':42}
+        params = load_params('params.yaml')['model_building']
         clf=train_model(X_train,y_train,params)
         model_saved_path='models/model.pkl'
         save_model(clf,model_saved_path)

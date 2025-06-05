@@ -9,6 +9,7 @@ import string
 from sklearn.preprocessing import LabelEncoder
 nltk.download('stopwords')
 nltk.download('punkt_tab')
+import yaml
 
 log_dir='log'
 os.makedirs(log_dir,exist_ok=True)
@@ -30,7 +31,8 @@ file_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
-logger.debug('****************************************************************************************************')
+logger.debug('***************************************************')
+
 
 def transform_text(text):
     """
